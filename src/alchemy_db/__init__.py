@@ -3,9 +3,13 @@ from urllib.parse import unquote
 import pandas as pd
 import ast
 from .models.base_model import Base
+from .models.recipe_ingredient_model  import RecipeIngredient
+from .models.ingredient_model import Ingredient
+from .models.recipe_model import Recipe
+from .models import user_model
+
 from .database import database
 from .session import session
-from .models import user_model
 from .accessors import user_repository
 
 from .session.session import SessionLocal
@@ -13,14 +17,27 @@ from .database.database import engine
 
 if(os.getenv('FIRST_TIME_INITIALIZE')):
         with SessionLocal() as session:
+                Base.metadata.drop_all(engine)
+                session.commit()
                 Base.metadata.create_all(engine)
                 session.commit()
 
         # Load Excel file
         recipes :pd.DataFrame = pd.read_csv('recipes_w_search_terms.csv')
+        # Filter result based on database criterias
+
+        recipes.drop(recipes[recipes['description'].str.len()< 25].index, inplace=True)
+        recipes.drop(recipes[recipes['description'].str.len() > 500].index, inplace=True)
+        recipes.drop(recipes[recipes['description'].str.strip().eq('')].index, inplace=True)
+        recipes.drop(recipes[recipes['description'].isnull()].index, inplace=True)
+        recipes.drop(recipes[recipes['steps'].str.len() > 500].index, inplace=True)
+        recipes.drop(recipes[recipes['steps'].str.len() < 25].index, inplace=True)
+        recipes.drop(recipes[recipes['steps'].str.strip().eq('')].index, inplace=True)
+        recipes.drop(recipes[recipes['steps'].isnull()].index, inplace=True)
+        recipes.drop(recipes[recipes['ingredients_raw_str'].str.len() > 500].index, inplace=True)
         # transform the string into an array of strings safely without using eval
         recipes['ingredients'] = recipes['ingredients'].apply(ast.literal_eval)
-
+        recipes['servings'] = recipes['servings'].astype(int)
         # Flatten all ingredient lists into one list
         all_ingredients = [
         ingredient
@@ -29,7 +46,7 @@ if(os.getenv('FIRST_TIME_INITIALIZE')):
         ]
         # Remove duplicates
         unique_ingredients = pd.DataFrame({
-                'name': pd.unique(all_ingredients)
+                'name': pd.unique(pd.Series(all_ingredients))
         })
         unique_ingredients['ingredient_id'] = range(1, len(unique_ingredients) + 1)
         # Fix text formatting errors
@@ -51,9 +68,17 @@ if(os.getenv('FIRST_TIME_INITIALIZE')):
         recipe_ingredients = pd.DataFrame(recipe_ingredient_list)
         # Remove unnecessary data
         recipes.drop(columns=['ingredients'], inplace=True)
+        recipes.drop(columns=['tags'], inplace=True)
+        recipes.drop(columns=['search_terms'], inplace=True)
+        recipes = recipes.drop_duplicates(subset='name', keep='first')
+        recipe_ingredients =recipe_ingredients.drop_duplicates()
         # Rename columns for clarity
-        recipes.rename(columns={'id':"recipe_id"})
+        recipes =recipes.rename(columns={'id':"recipe_id"})
         # Import DataFrames into PostgreSQL
-        unique_ingredients.to_sql('ingredients', engine, if_exists='append', index=False)  
-        recipes.to_sql('recipes', engine, if_exists='append', index=False)
-        recipe_ingredients.to_sql('recipe_ingredients', engine, if_exists='append', index=False)
+        with SessionLocal() as session:
+                unique_ingredients.to_sql('ingredients', engine, if_exists='append', index=False)  
+                recipes.to_sql('recipes', engine, if_exists='append', index=False)
+                recipe_ingredients.to_sql('recipe_ingredients', engine, if_exists='append', index=False)
+                session.commit()
+        if(os.getenv('ALCHEMY_ECHO')):
+                print('Database import finished!')
