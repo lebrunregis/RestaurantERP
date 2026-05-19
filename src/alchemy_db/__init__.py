@@ -25,8 +25,8 @@ def extract_serving_size(s):
     else:
            print(f"The serving size doesn't match the format. {s}")
     return val
-FIRST_TIME_INITIALIZE: bool = json.loads(os.getenv('FIRST_TIME_INITIALIZE', 'false').lower())
-if(FIRST_TIME_INITIALIZE):
+IMPORT_RECIPES: bool = json.loads(os.getenv('IMPORT_RECIPES', 'false').lower())
+if(IMPORT_RECIPES):
         with SessionLocal() as session:
                 Base.metadata.drop_all(engine)
                 session.commit()
