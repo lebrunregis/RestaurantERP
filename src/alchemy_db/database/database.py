@@ -12,6 +12,6 @@ DATABASE_URL = (
     f"{os.getenv('POSTGRES_PORT')}/"
     f"{os.getenv('POSTGRES_DB')}"
     )
-ECHO = json.loads(os.getenv('ALCHEMY_ECHO').lower())
+ECHO: bool = json.loads(os.getenv('ALCHEMY_ECHO', 'false').lower())
 print(DATABASE_URL)
 engine = create_engine(DATABASE_URL, echo=ECHO)

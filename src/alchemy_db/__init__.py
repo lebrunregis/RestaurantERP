@@ -1,3 +1,4 @@
+import json
 import os
 from urllib.parse import unquote
 import pandas as pd
@@ -24,8 +25,8 @@ def extract_serving_size(s):
     else:
            print(f"The serving size doesn't match the format. {s}")
     return val
-
-if(os.getenv('FIRST_TIME_INITIALIZE')):
+FIRST_TIME_INITIALIZE: bool = json.loads(os.getenv('FIRST_TIME_INITIALIZE', 'false').lower())
+if(FIRST_TIME_INITIALIZE):
         with SessionLocal() as session:
                 Base.metadata.drop_all(engine)
                 session.commit()
