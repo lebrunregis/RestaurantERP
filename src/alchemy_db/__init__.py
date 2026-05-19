@@ -2,6 +2,7 @@ import os
 from urllib.parse import unquote
 import pandas as pd
 import ast
+import re
 from .models.base_model import Base
 from .models.recipe_ingredient_model  import RecipeIngredient
 from .models.ingredient_model import Ingredient
@@ -14,6 +15,15 @@ from .accessors import user_repository
 
 from .session.session import SessionLocal
 from .database.database import engine
+
+def extract_serving_size(s):
+    match = re.search(r"\((-?\d+)\s*g\)", s)
+    val = None
+    if match:
+        val = int(match.group(1))
+    else:
+           print(f"The serving size doesn't match the format. {s}")
+    return val
 
 if(os.getenv('FIRST_TIME_INITIALIZE')):
         with SessionLocal() as session:
@@ -35,9 +45,15 @@ if(os.getenv('FIRST_TIME_INITIALIZE')):
         recipes.drop(recipes[recipes['steps'].str.strip().eq('')].index, inplace=True)
         recipes.drop(recipes[recipes['steps'].isnull()].index, inplace=True)
         recipes.drop(recipes[recipes['ingredients_raw_str'].str.len() > 500].index, inplace=True)
-        # transform the string into an array of strings safely without using eval
+        # values conversion
         recipes['ingredients'] = recipes['ingredients'].apply(ast.literal_eval)
         recipes['servings'] = recipes['servings'].astype(int)
+        recipes['serving_size'] = recipes['serving_size'].apply(extract_serving_size)
+        #extra filtering based on converted data
+        recipes.drop(recipes[recipes['serving_size']< 1].index, inplace=True)
+        recipes.drop(recipes[recipes['serving_size']> 1000].index, inplace=True)
+        recipes.drop(recipes[recipes['servings']< 1].index, inplace=True)
+        recipes.drop(recipes[recipes['servings']> 1000].index, inplace=True)
         # Flatten all ingredient lists into one list
         all_ingredients = [
         ingredient
@@ -73,7 +89,11 @@ if(os.getenv('FIRST_TIME_INITIALIZE')):
         recipes = recipes.drop_duplicates(subset='name', keep='first')
         recipe_ingredients =recipe_ingredients.drop_duplicates()
         # Rename columns for clarity
-        recipes =recipes.rename(columns={'id':"recipe_id"})
+        recipes =recipes.rename(columns={
+               'id':"recipe_id",
+               'serving_size':"serving_size_grams",
+                                          })
+
         # Import DataFrames into PostgreSQL
         with SessionLocal() as session:
                 unique_ingredients.to_sql('ingredients', engine, if_exists='append', index=False)  

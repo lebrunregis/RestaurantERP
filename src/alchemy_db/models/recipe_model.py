@@ -15,17 +15,16 @@ class Recipe(Base):
         nullable=False
     )
     description: Mapped[str] = mapped_column(
-        String(501),
+        String(500),
         unique=False,
         nullable=True
     )
     ingredients_raw_str: Mapped[str] = mapped_column(
-        String(502),
+        String(500),
         unique=False,
         nullable=False
     )
-    serving_size: Mapped[str] = mapped_column(
-        String(53),
+    serving_size_grams: Mapped[int] = mapped_column(
         unique=False,
         nullable=False
     )
