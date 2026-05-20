@@ -1,77 +1,63 @@
-from sqlalchemy.orm import Session, joinedload
-from sqlalchemy import select
+from typing import List, Optional
+from sqlalchemy.orm import Session
 from ..models.users_model import Users
 
-def create_user(session: Session, username: str, email: str, country: str):
-    user = Users(username=username, email=email, country=country)
 
-    session.add(user)
-    session.commit()
-    session.refresh(user)
+# --- CRUD Accessors for Users --- #
 
-    return user
-
-
-def get_user_by_username(session: Session, username: str):
-    stmt = select(Users).where(Users.username == username)
-    user = session.execute(stmt).scalar_one_or_none()
-
-    return user
-
-def get_all_users(session: Session):
-    stmt = select(Users)
-    users = session.execute(stmt).scalars().all()
-
-    return users
-
-# Retourne tous les users avec les profiles déjà chargés en mémoire
-# grâce à joinedload().
-# Quand on accède à user.profil, aucune requête SQL supplémentaire n'est faite.
-def get_all_users_with_profil(session: Session):
-    stmt = (
-        select(Users)
-        .options(joinedload(Users.profil))
+def create_user(
+    db: Session,
+    username: str,
+    email: Optional[str] = None
+) -> Users:
+    new_user = Users(
+        username=username,
+        email=email
     )
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
 
-    users = session.execute(stmt).scalars().all()
 
-    return users
+def get_user_by_id(db: Session, user_id: int) -> Optional[Users]:
+    return db.query(Users).filter(Users.id == user_id).first()
 
-# Le JOIN est utilisé dans la requête SQL,
-# mais la relation profil n'est pas automatiquement hydratée dans les objets ORM.
-# Quand on accède à user.profil, SQLAlchemy peut refaire des requêtes supplémentaires
-# (lazy loading).
-def get_all_users_with_profil_autre(session: Session):
-    stmt = (
-        select(Users)
-        .join(Users.profil)
-    )
 
-    users = session.execute(stmt).scalars().all()
+def get_user_by_username(db: Session, username: str) -> Optional[Users]:
+    return db.query(Users).filter(Users.username == username).first()
 
-    return users
 
-def update_user_country(session: Session, user_id: int, new_country: str):
-    stmt = select(Users).where(Users.id == user_id)
-    user = session.execute(stmt).scalar_one_or_none()
+def get_user_by_email(db: Session, email: str) -> Optional[Users]:
+    return db.query(Users).filter(Users.email == email).first()
 
-    if user is None:
+
+def get_all_users(db: Session) -> List[Users]:
+    return db.query(Users).all()
+
+
+def update_user(
+    db: Session,
+    user_id: int,
+    username: Optional[str] = None,
+    email: Optional[str] = None
+) -> Optional[Users]:
+    user = db.query(Users).filter(Users.id == user_id).first()
+    if not user:
         return None
-    
-    user.country = new_country
-    session.commit()
-    session.refresh(user)
-
+    if username is not None:
+        user.username = username
+    if email is not None:
+        user.email = email
+    db.commit()
+    db.refresh(user)
     return user
 
-def delete_user_by_id(session: Session, user_id):
-    stmt = select(Users).where(Users.id == user_id)
-    user = session.execute(stmt).scalar_one_or_none()
 
-    if user is None:
+def delete_user(db: Session, user_id: int) -> bool:
+    user = db.query(Users).filter(Users.id == user_id).first()
+    if not user:
         return False
-    
-    session.delete(user)
-    session.commit()
-
+    db.delete(user)
+    db.commit()
     return True

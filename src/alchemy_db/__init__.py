@@ -10,7 +10,7 @@ from . import models
 
 from .database import database
 from .session import session
-from .accessors import user_repository
+from . import accessors
 
 from .session.session import SessionLocal
 from .database.database import engine
