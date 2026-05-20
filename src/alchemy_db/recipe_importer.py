@@ -22,12 +22,6 @@ def extract_serving_size(s):
     return val
 
 def import_recipes():
-        with SessionLocal() as session:
-                models.base_model.Base.metadata.drop_all(engine)
-                session.commit()
-                models.base_model.Base.metadata.create_all(engine)
-                session.commit()
-
         # Load Excel file
         recipes :pd.DataFrame = pd.read_csv('recipes_w_search_terms.csv')
         # Filter result based on database criterias
