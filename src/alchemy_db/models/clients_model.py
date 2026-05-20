@@ -9,7 +9,7 @@ class Client(Base):
     client_id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)  # full name
     email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    phone_number: Mapped[str] = mapped_column(String(20), nullable=True)
+    phone_number: Mapped[str] = mapped_column(String(50), nullable=True)
     address: Mapped[str] = mapped_column(String(200), nullable=True)  # for delivery
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 

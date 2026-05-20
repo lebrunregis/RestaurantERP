@@ -14,6 +14,6 @@ class SupplierIngredient(Base):
     remaining_units: Mapped[int] = mapped_column(Integer, default=0)
     unit: Mapped[str] = mapped_column(String(50), nullable=False)  # e.g., kg, liters, pieces
 
-    # Optional relationships
-    supplier = relationship("Supplier", back_populates="ingredient_links")
-    ingredient = relationship("Ingredient", back_populates="supplier_links")
+    # Relationships
+    supplier_links = relationship("Supplier", back_populates="ingredient_links")
+    ingredient_links = relationship("Ingredient", back_populates="supplier_links")

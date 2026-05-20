@@ -12,5 +12,5 @@ class KitchenOrderItem(Base):
     price_per_unit: Mapped[float] = mapped_column(Float, nullable=True)
 
     # Relationships
-    order = relationship("KitchenOrder", back_populates="items")
-    supplier_ingredient = relationship("SupplierIngredient")
+    kitchen_order_link = relationship("KitchenOrder", back_populates="items")
+    ingredient_link = relationship("Ingredient")

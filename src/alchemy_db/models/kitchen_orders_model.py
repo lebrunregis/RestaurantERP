@@ -15,4 +15,4 @@ class KitchenOrder(Base):
 
     # Relationships
     supplier = relationship("Supplier")
-    items = relationship("KitchenOrderItem", back_populates="order", cascade="all, delete-orphan")
+    items = relationship("KitchenOrderItem", back_populates="kitchen_order_link", cascade="all, delete-orphan")

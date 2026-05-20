@@ -1,20 +1,20 @@
 import json
 import os
 
-from src.alchemy_db.session.session import SessionLocal
+from src.alchemy_db.session import SessionLocal
 
-from . import base_model
-from . import recipe_ingredients_model
-from . import ingredients_model
-from . import recipes_model
-from . import client_order_items_model
-from . import client_orders_model
-from . import clients_model
-from . import ingredients_model
-from . import kitchen_order_items_model
-from . import kitchen_orders_model
-from . import menu_items_model
-from . import recipe_ingredients_model
-from . import supplier_ingredient_model
-from . import suppliers_model
-from . import users_model
+from .base_model import Base
+from .recipe_ingredients_model import RecipeIngredient
+from .ingredients_model import Ingredient
+from .recipes_model import Recipe
+from .client_order_items_model import ClientOrderItem
+from .client_orders_model import ClientOrder
+from .clients_model import Client
+from .ingredients_model import Ingredient
+from .kitchen_order_items_model import KitchenOrderItem
+from .kitchen_orders_model import KitchenOrder
+from .menu_items_model import MenuItem
+from .recipe_ingredients_model import RecipeIngredient
+from .supplier_ingredient_model import SupplierIngredient
+from .suppliers_model import Supplier
+from .users_model import Users

@@ -36,7 +36,7 @@ class MenuItem(Base):
     # When the item was added to the menu
     added_on: Mapped[datetime] = mapped_column(default=datetime.now)
 
-    recipe: Mapped[Recipe] = relationship("recipe", back_populates="recipe_id")
+    recipe_link: Mapped[Recipe] = relationship("Recipe")
 
     def __repr__(self):
         status = "Visible" if self.is_visible else "Invisible"

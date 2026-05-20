@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import String
 
 from .base_model import Base
@@ -37,3 +37,5 @@ class Recipe(Base):
         unique=False,
         nullable=False
     )
+
+    ingredient_links = relationship("RecipeIngredient", back_populates="recipe_links", cascade="all, delete-orphan")

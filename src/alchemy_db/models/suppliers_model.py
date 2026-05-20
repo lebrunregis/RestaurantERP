@@ -24,5 +24,5 @@ class Supplier(Base):
 
 
     # Link to SupplierIngredient
-    ingredient_links = relationship("SupplierIngredient", back_populates="supplier")
+    ingredient_links = relationship("SupplierIngredient", back_populates="supplier_links")
     

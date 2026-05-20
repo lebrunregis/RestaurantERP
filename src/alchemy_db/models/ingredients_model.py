@@ -16,6 +16,6 @@ class Ingredient(Base):
     )
 
     # Link to SupplierIngredient
-    supplier_links = relationship("SupplierIngredient", back_populates="ingredient")
+    supplier_links = relationship("SupplierIngredient", back_populates="ingredient_links")
         # Link to RecipeIngredient
-    recipe_links = relationship("RecipeIngredient", back_populates="ingredient", cascade="all, delete-orphan")
+    recipe_links = relationship("RecipeIngredient", back_populates="ingredient_links", cascade="all, delete-orphan")
