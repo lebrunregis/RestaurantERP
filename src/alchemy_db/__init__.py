@@ -4,11 +4,9 @@ from urllib.parse import unquote
 import pandas as pd
 import ast
 import re
-from .models.base_model import Base
-from .models.recipe_ingredient_model  import RecipeIngredient
-from .models.ingredient_model import Ingredient
-from .models.recipe_model import Recipe
-from .models import user_model
+
+from .recipe_importer import import_recipes
+from . import models
 
 from .database import database
 from .session import session
@@ -17,89 +15,7 @@ from .accessors import user_repository
 from .session.session import SessionLocal
 from .database.database import engine
 
-def extract_serving_size(s):
-    match = re.search(r"\((-?\d+)\s*g\)", s)
-    val = None
-    if match:
-        val = int(match.group(1))
-    else:
-           print(f"The serving size doesn't match the format. {s}")
-    return val
+
 IMPORT_RECIPES: bool = json.loads(os.getenv('IMPORT_RECIPES', 'false').lower())
 if(IMPORT_RECIPES):
-        with SessionLocal() as session:
-                Base.metadata.drop_all(engine)
-                session.commit()
-                Base.metadata.create_all(engine)
-                session.commit()
-
-        # Load Excel file
-        recipes :pd.DataFrame = pd.read_csv('recipes_w_search_terms.csv')
-        # Filter result based on database criterias
-
-        recipes.drop(recipes[recipes['description'].str.len()< 25].index, inplace=True)
-        recipes.drop(recipes[recipes['description'].str.len() > 500].index, inplace=True)
-        recipes.drop(recipes[recipes['description'].str.strip().eq('')].index, inplace=True)
-        recipes.drop(recipes[recipes['description'].isnull()].index, inplace=True)
-        recipes.drop(recipes[recipes['steps'].str.len() > 500].index, inplace=True)
-        recipes.drop(recipes[recipes['steps'].str.len() < 25].index, inplace=True)
-        recipes.drop(recipes[recipes['steps'].str.strip().eq('')].index, inplace=True)
-        recipes.drop(recipes[recipes['steps'].isnull()].index, inplace=True)
-        recipes.drop(recipes[recipes['ingredients_raw_str'].str.len() > 500].index, inplace=True)
-        # values conversion
-        recipes['ingredients'] = recipes['ingredients'].apply(ast.literal_eval)
-        recipes['servings'] = recipes['servings'].astype(int)
-        recipes['serving_size'] = recipes['serving_size'].apply(extract_serving_size)
-        #extra filtering based on converted data
-        recipes.drop(recipes[recipes['serving_size']< 1].index, inplace=True)
-        recipes.drop(recipes[recipes['serving_size']> 1000].index, inplace=True)
-        recipes.drop(recipes[recipes['servings']< 1].index, inplace=True)
-        recipes.drop(recipes[recipes['servings']> 1000].index, inplace=True)
-        # Flatten all ingredient lists into one list
-        all_ingredients = [
-        ingredient
-        for sublist in recipes['ingredients']
-                for ingredient in sublist
-        ]
-        # Remove duplicates
-        unique_ingredients = pd.DataFrame({
-                'name': pd.unique(pd.Series(all_ingredients))
-        })
-        unique_ingredients['ingredient_id'] = range(1, len(unique_ingredients) + 1)
-        # Fix text formatting errors
-        unique_ingredients['name'] = unique_ingredients['name'].apply(unquote)
-        # Create lookup dictionary
-        ingredient_lookup = dict(zip(unique_ingredients['name'], unique_ingredients['ingredient_id']))
-
-        # Build join table
-        recipe_ingredient_list = []
-
-        for _, row in recipes.iterrows():
-                recipe_id = row['id']
-                for ingredient in row['ingredients']:
-                        recipe_ingredient_list.append({
-                        'recipe_id': recipe_id,
-                        'ingredient_id': ingredient_lookup[unquote(ingredient)]
-                        })
-        # Dataframe conversion
-        recipe_ingredients = pd.DataFrame(recipe_ingredient_list)
-        # Remove unnecessary data
-        recipes.drop(columns=['ingredients'], inplace=True)
-        recipes.drop(columns=['tags'], inplace=True)
-        recipes.drop(columns=['search_terms'], inplace=True)
-        recipes = recipes.drop_duplicates(subset='name', keep='first')
-        recipe_ingredients =recipe_ingredients.drop_duplicates()
-        # Rename columns for clarity
-        recipes =recipes.rename(columns={
-               'id':"recipe_id",
-               'serving_size':"serving_size_grams",
-                                          })
-
-        # Import DataFrames into PostgreSQL
-        with SessionLocal() as session:
-                unique_ingredients.to_sql('ingredients', engine, if_exists='append', index=False)  
-                recipes.to_sql('recipes', engine, if_exists='append', index=False)
-                recipe_ingredients.to_sql('recipe_ingredients', engine, if_exists='append', index=False)
-                session.commit()
-        if(os.getenv('ALCHEMY_ECHO')):
-                print('Database import finished!')
+    import_recipes()

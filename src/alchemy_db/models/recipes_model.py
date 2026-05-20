@@ -37,6 +37,3 @@ class Recipe(Base):
         unique=False,
         nullable=False
     )
-
-    def __repr__(self):
-        return f'Recipe : ID : {self.recipe_id} USERNAME : {self.name}'

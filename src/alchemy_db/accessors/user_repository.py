@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import select
-from ..models.user_model import Users
+from ..models.users_model import Users
 
 def create_user(session: Session, username: str, email: str, country: str):
     user = Users(username=username, email=email, country=country)

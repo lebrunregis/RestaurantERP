@@ -19,6 +19,3 @@ class Users(Base):
         String(50),
         unique=True
     )
-
-    def __repr__(self):
-        return f'User : ID : {self.id} USERNAME : {self.username} EMAIL : {self.email}'
