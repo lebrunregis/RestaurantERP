@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Oops! Bad Request</title>
+    <style>
+        body {
+            font-family: "Comic Sans MS", cursive, sans-serif;
+            background-color: #fff8e1;
+            text-align: center;
+            padding: 50px;
+            color: #d84315;
+        }
+        h1 {
+            font-size: 5em;
+            margin: 0;
+        }
+        p {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        a {
+            text-decoration: none;
+            color: #ff6f61;
+            font-weight: bold;
+        }
+        img {
+            max-width: 300px;
+            margin: 30px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>400 😅</h1>
+    <p>Oops! Looks like your request got a little too spicy for our server to handle.</p>
+    <p>Try going back to <a href="{{ url_for('home') }}">home</a> and start fresh. Maybe without the chili this time!</p>
+</body>
+</html>

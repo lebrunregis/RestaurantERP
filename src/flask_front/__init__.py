@@ -1,4 +1,7 @@
 from flask import Flask
 
-app = Flask(__name__)
-from src.flask_front.routing import *
+app = Flask(__name__,
+            template_folder="templates")
+
+from . import routing
+from . import recipes

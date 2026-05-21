@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Recipe App</title>
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fff8f0;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background-color: #ff6f61;
+            color: white;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 3em;
+        }
+        header p {
+            font-size: 1.3em;
+            margin-top: 10px;
+        }
+        main {
+            max-width: 800px;
+            margin: 40px auto;
+            text-align: center;
+        }
+        .btn {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 15px 30px;
+            background-color: #ff6f61;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background-color 0.2s;
+            font-size: 1.2em;
+        }
+        .btn:hover {
+            background-color: #e94b3c;
+        }
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px 0;
+            background-color: #ffe6dc;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to My Recipe App!</h1>
+        <p>Discover delicious recipes, cook with love, and enjoy every bite.</p>
+    </header>
+
+    <main>
+        <a class="btn" href="{{ url_for('recipes.list_recipes') }}">View Recipes</a>
+    </main>
+
+    <footer>
+        &copy; {{ current_year }} My Recipe App. All rights reserved.
+    </footer>
+</body>
+</html>
