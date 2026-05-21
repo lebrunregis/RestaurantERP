@@ -4,6 +4,13 @@ from urllib.parse import unquote
 import pandas as pd
 import ast
 import re
+
+from sqlalchemy import func, select
+
+from .models.recipes_model import Recipe
+
+from .models.ingredients_model import Ingredient
+from .models.recipe_ingredients_model import RecipeIngredient
 from . import models
 
 from .session import session
@@ -93,3 +100,33 @@ def import_recipes():
                 session.commit()
         if(os.getenv('ALCHEMY_ECHO')):
                 print('Database import finished!')
+
+def prune_rare_ingredients():
+     with SessionLocal() as session:
+        # Step 1: Find ingredient IDs that appear in fewer than 5 recipes
+        rare_ingredients = (
+        session.query(
+                RecipeIngredient.ingredient_id,
+                func.count(RecipeIngredient.recipe_id).label("recipe_count")
+        )
+        .group_by(RecipeIngredient.ingredient_id)
+        .having(func.count(RecipeIngredient.recipe_id) < 5)
+        .subquery()
+        )
+        # Step 2: Delete Ingredients that match
+        ingredients_to_delete = session.query(Ingredient).filter(Ingredient.ingredient_id.in_(select(rare_ingredients.c.ingredient_id)))
+        ingredient_count = ingredients_to_delete.count()  # optional, to see how many will be deleted
+        ingredients_to_delete.delete(synchronize_session=False)
+        # Step 3: Delete associated recipes
+        recipes_links = (
+        session.query(
+                RecipeIngredient.recipe_id
+        ).filter(RecipeIngredient.ingredient_id.in_(select(rare_ingredients.c.ingredient_id))).distinct()
+        .subquery()
+        )
+        recipes_to_delete = session.query(Recipe).filter(Recipe.recipe_id.in_(select(recipes_links.c.recipe_id)))
+        recipe_count = recipes_to_delete.count()  # optional, to see how many will be deleted
+        recipes_to_delete.delete(synchronize_session=False)
+
+        session.commit()
+        print(f"✅ Deleted {ingredient_count} ingredients used in fewer than 5 recipes and {recipe_count} associated recipes.")

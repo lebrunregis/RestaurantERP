@@ -1,7 +1,7 @@
 from typing import Optional
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import String, Float, Boolean, DateTime, ForeignKey
+from sqlalchemy import Index, String, ForeignKey
 from datetime import datetime
 
 from src.alchemy_db.models.recipes_model import Recipe
@@ -38,6 +38,11 @@ class MenuItem(Base):
 
     recipe_link: Mapped[Recipe] = relationship("Recipe")
 
+    # Add index to speed up queries grouped by ingredient_id
+    __table_args__ = (
+        Index("ix_menu_item_recipe_id", "recipe_id"),
+
+    )
     def __repr__(self):
         status = "Visible" if self.is_visible else "Invisible"
         return f"<MenuItem {self.name} (${self.price}) - {status}>"

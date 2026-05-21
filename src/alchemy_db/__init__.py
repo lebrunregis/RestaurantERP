@@ -1,6 +1,6 @@
 import json
 import os
-from .recipe_importer import import_recipes
+from .recipe_importer import import_recipes, prune_rare_ingredients
 from .demo_data_importer import import_demo_data
 import json
 import os
@@ -25,6 +25,7 @@ def ResetDatabase():
 if(RESET_DATABASE):
     ResetDatabase()
     if(IMPORT_RECIPES):
-                import_recipes()
-                if(SET_DEMO_DATA):
-                        import_demo_data()
+        import_recipes()
+        prune_rare_ingredients()
+        if(SET_DEMO_DATA):
+            import_demo_data()
