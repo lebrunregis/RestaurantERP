@@ -88,5 +88,5 @@ def delete_menu_item(db: Session, menu_item_id: int) -> bool:
 def get_recipe_for_menu_item(db: Session, menu_item_id: int) -> Optional[Recipe]:
     item = db.query(MenuItem).filter(MenuItem.menu_item_id == menu_item_id).first()
     if item:
-        return item.recipe
+        return item.recipe_link
     return None

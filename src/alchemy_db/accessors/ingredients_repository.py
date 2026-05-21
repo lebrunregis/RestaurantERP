@@ -56,7 +56,7 @@ def delete_ingredient(db: Session, ingredient_id: int) -> bool:
 def get_recipes_for_ingredient(db: Session, ingredient_id: int) -> list[RecipeIngredient]:
     ingredient = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).first()
     if ingredient:
-        return ingredient.recipe_links  # returns list of RecipeIngredient
+        return ingredient.recipe_ingredient_links  # returns list of RecipeIngredient
     return []
 
 
@@ -73,7 +73,7 @@ def add_recipe_to_ingredient(db: Session, ingredient_id: int, recipe_ingredient:
     ingredient = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).first()
     if not ingredient:
         return False
-    ingredient.recipe_links.append(recipe_ingredient)
+    ingredient.recipe_ingredient_links.append(recipe_ingredient)
     db.commit()
     return True
 
@@ -83,9 +83,9 @@ def remove_recipe_from_ingredient(db: Session, ingredient_id: int, recipe_ingred
     ingredient = db.query(Ingredient).filter(Ingredient.ingredient_id == ingredient_id).first()
     if not ingredient:
         return False
-    link_to_remove = next((link for link in ingredient.recipe_links if link.id == recipe_ingredient_id), None)
+    link_to_remove = next((link for link in ingredient.recipe_ingredient_links if link.id == recipe_ingredient_id), None)
     if link_to_remove:
-        ingredient.recipe_links.remove(link_to_remove)
+        ingredient.recipe_ingredient_links.remove(link_to_remove)
         db.delete(link_to_remove)
         db.commit()
         return True
