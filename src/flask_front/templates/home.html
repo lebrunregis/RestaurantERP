@@ -1,50 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>My Recipe App</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-</head>
-<body>
+{% extends "base.html" %}
 
+{% block title %}Home - My Recipe App{% endblock %}
 
-    <!-- Header Section -->
-    <header>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
-        <div class="container">
-            <a class="navbar-brand" href="{{ url_for('recipes.list_recipes') }}">My Recipe App</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('recipes.list_recipes') }}">Recipes</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    </header>
-
-    <!-- Main Content -->
-<main class="container pt-5 mt-5">
+{% block content %}
+<div class="text-center mt-5">
     <h1 class="display-4">Welcome to My Recipe App!</h1>
     <p class="lead">Discover delicious recipes, cook with love, and enjoy every bite.</p>
-    <a class="btn btn-primary btn-lg btn-primary-custom mt-3" href="{{ url_for('recipes.list_recipes') }}">
+    <a class="btn btn-primary btn-lg mt-3" href="{{ url_for('recipes.list_recipes') }}">
         View Recipes
     </a>
-</main>
-
-    <!-- Footer -->
-    <footer>
-        &copy; {{ current_year }} My Recipe App. All rights reserved.
-    </footer>
-
-    <!-- Bootstrap JS Bundle -->
-    <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
-</body>
-</html>
+</div>
+{% endblock %}

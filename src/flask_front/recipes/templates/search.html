@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Search Recipes{% endblock %}
+
+{% block content %}
+<div class="mt-4">
+    <h2>Search Recipes</h2>
+    <form method="GET" action="{{ url_for('recipes.search_recipes') }}" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="q" class="form-control" placeholder="Search by recipe name or ingredient" value="{{ query }}">
+            <button class="btn btn-primary" type="submit">Search</button>
+        </div>
+    </form>
+
+    {% if results %}
+        <ul class="list-group">
+            {% for recipe in results %}
+                <li class="list-group-item">
+                    <a href="{{ url_for('recipes.view_recipe', recipe_id=recipe.id) }}">{{ recipe.name }}</a>
+                    <small class="text-muted">
+                        Ingredients: {{ recipe.ingredients|map(attribute='name')|join(', ') }}
+                    </small>
+                </li>
+            {% endfor %}
+        </ul>
+    {% elif query %}
+        <p>No recipes found matching "{{ query }}"</p>
+    {% endif %}
+</div>
+{% endblock %}
