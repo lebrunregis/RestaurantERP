@@ -1,6 +1,9 @@
 from dotenv import load_dotenv
 load_dotenv()
-from src.enums import Statuses
-import src.alchemy_db
-from src.flask_front import app
 
+from src.flask_front import create_app
+
+app = create_app()
+
+if __name__ == "__main__":
+    app.run(debug=True)
