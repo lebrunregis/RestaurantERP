@@ -3,7 +3,6 @@ from typing import Optional
 from sqlalchemy.orm import Session
 from ..models.recipes_model import Recipe
 
-
 # --- CRUD Accessors for Recipe --- #
 
 # Create a new recipe
@@ -32,13 +31,12 @@ def create_recipe(
 
 # Get recipe by ID
 def get_recipe_by_id(db: Session, recipe_id: int) -> Optional[Recipe]:
-    return db.query(Recipe).filter(Recipe.recipe_id == recipe_id).first()
-
+  recipe :Optional[Recipe] =db.query(Recipe).filter(Recipe.recipe_id == recipe_id).first()
+  return recipe
 
 # Get all recipes
 def get_all_recipes(db: Session) -> list[Recipe]:
     return db.query(Recipe).all()
-
 
 # Update a recipe
 def update_recipe(
@@ -79,3 +77,12 @@ def delete_recipe(db: Session, recipe_id: int) -> bool:
     db.delete(recipe)
     db.commit()
     return True
+
+def get_recipes_paginated(db: Session, page: int = 1, per_page: int = 50) -> list[Recipe]:
+    """Return a page of recipes"""
+    offset = (page - 1) * per_page
+    return db.query(Recipe).offset(offset).limit(per_page).all()
+
+def count_recipes(db: Session) -> int:
+    """Return total number of recipes"""
+    return db.query(Recipe).count()

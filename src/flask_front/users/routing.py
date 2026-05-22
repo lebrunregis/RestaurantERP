@@ -18,9 +18,3 @@ def get_user(user_id):
 @users_bp.route("/<int:user_id>/posts", methods=["GET"])
 def get_user_posts(user_id):
     return jsonify({"message": f"Posts for user {user_id}"})
-
-app = Flask(__name__)
-app.register_blueprint(users_bp)
-
-if __name__ == "__main__":
-    app.run(debug=True)

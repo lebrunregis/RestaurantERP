@@ -1,50 +1,43 @@
 import datetime
 
-from flask import make_response, redirect, render_template, url_for, session
-from src.flask_front import app
+from flask import Blueprint, make_response, redirect, render_template, url_for, session
 
-@app.route("/home")
+home_bp = Blueprint(
+        "home", 
+    __name__, 
+    url_prefix="",
+    template_folder="templates"  # points to blueprints/recipes/templates
+)
+
+@home_bp.route("/home")
 def home():
     return render_template("home.html", current_year=datetime.datetime.now().year)
 
-@app.route("/")
-@app.route("/index")
+@home_bp.route("/")
+@home_bp.route("/index")
 def login():
-    return redirect(url_for('home'))
+    return redirect(url_for('home.home'))
 
-@app.errorhandler(404)
+@home_bp.errorhandler(404)
 def not_found(error):
-    if app.debug:
         """Page not found."""
         return make_response(
             render_template("404.html"),
             error
         )
-    else:
-        return redirect(url_for('home'))
 
-
-@app.errorhandler(400)
+@home_bp.errorhandler(400)
 def bad_request(error):
-    if app.debug:
         """Page not found."""
         return make_response(
             render_template("400.html"),
             error
         )
-    else:
-        return redirect(url_for('home'))
 
-@app.errorhandler(500)
+@home_bp.errorhandler(500)
 def server_error(error):
-    if app.debug:
         """Page not found."""
         return make_response(
             render_template("500.html"),
             error
         )
-    else:
-        return redirect(url_for('home'))
-
-if __name__ == "__main__":
-    app.run(debug=True)  
