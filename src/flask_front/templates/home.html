@@ -4,35 +4,13 @@
     <meta charset="UTF-8">
     <title>My Recipe App</title>
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
-    <style>
-        body {
-            padding-top: 60px; /* for fixed navbar */
-        }
-        header {
-            background: #f8f9fa;
-            padding: 40px 0;
-            text-align: center;
-            border-bottom: 1px solid #dee2e6;
-        }
-        footer {
-            background: #f8f9fa;
-            padding: 20px 0;
-            text-align: center;
-            border-top: 1px solid #dee2e6;
-            margin-top: 40px;
-        }
-        .btn-primary-custom {
-            background-color: #ff6f61;
-            border-color: #ff6f61;
-        }
-        .btn-primary-custom:hover {
-            background-color: #e85b50;
-            border-color: #e85b50;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
+
+
+    <!-- Header Section -->
+    <header>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top shadow-sm">
         <div class="container">
@@ -46,64 +24,20 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('recipes.list_recipes') }}">Recipes</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Contact</a>
-                    </li>
                 </ul>
             </div>
         </div>
     </nav>
-
-    <!-- Header Section -->
-    <header>
-        <div class="container">
-            <h1 class="display-4">Welcome to My Recipe App!</h1>
-            <p class="lead">Discover delicious recipes, cook with love, and enjoy every bite.</p>
-            <a class="btn btn-primary btn-lg btn-primary-custom mt-3" href="{{ url_for('recipes.list_recipes') }}">
-                View Recipes
-            </a>
-        </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container my-5">
-        <!-- You can add feature cards or recipe previews here -->
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <img src="{{ url_for('static', filename='images/recipe1.jpg') }}" class="card-img-top" alt="Recipe 1">
-                    <div class="card-body">
-                        <h5 class="card-title">Delicious Pasta</h5>
-                        <p class="card-text">Quick and easy pasta recipes for every occasion.</p>
-                        <a href="#" class="btn btn-primary btn-sm btn-primary-custom">View Recipe</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <img src="{{ url_for('static', filename='images/recipe2.jpg') }}" class="card-img-top" alt="Recipe 2">
-                    <div class="card-body">
-                        <h5 class="card-title">Healthy Salads</h5>
-                        <p class="card-text">Fresh and nutritious salads for a healthy lifestyle.</p>
-                        <a href="#" class="btn btn-primary btn-sm btn-primary-custom">View Recipe</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <img src="{{ url_for('static', filename='images/recipe3.jpg') }}" class="card-img-top" alt="Recipe 3">
-                    <div class="card-body">
-                        <h5 class="card-title">Tasty Desserts</h5>
-                        <p class="card-text">Sweet treats to finish your meals perfectly.</p>
-                        <a href="#" class="btn btn-primary btn-sm btn-primary-custom">View Recipe</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </main>
+<main class="container pt-5 mt-5">
+    <h1 class="display-4">Welcome to My Recipe App!</h1>
+    <p class="lead">Discover delicious recipes, cook with love, and enjoy every bite.</p>
+    <a class="btn btn-primary btn-lg btn-primary-custom mt-3" href="{{ url_for('recipes.list_recipes') }}">
+        View Recipes
+    </a>
+</main>
 
     <!-- Footer -->
     <footer>

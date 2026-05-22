@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 <head>
     <meta charset="UTF-8">
     <title>{{ recipe.name }}</title>
@@ -28,7 +29,7 @@
         <h2>Steps</h2>
         <ol class="steps">
             {% for step in recipe.steps %}
-            <li>{{ step }}.</li>
+            <li>{{ step }}</li>
             {% endfor %}
         </ol>
     </div>

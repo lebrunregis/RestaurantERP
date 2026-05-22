@@ -1,48 +1,10 @@
 <!-- templates/404.html -->
 <!DOCTYPE html>
 <html lang="en">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 <head>
     <meta charset="UTF-8">
     <title>404: Page Not Found</title>
-    <style>
-        body {
-            background-color: #f7f7f7;
-            font-family: "Comic Sans MS", cursive, sans-serif;
-            text-align: center;
-            padding-top: 100px;
-            color: #333;
-        }
-        h1 {
-            font-size: 6em;
-            margin-bottom: 0;
-        }
-        p {
-            font-size: 1.5em;
-            margin-top: 0;
-        }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #ff6f61;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        a:hover {
-            background-color: #ff3b2e;
-        }
-        .ghost {
-            font-size: 5em;
-            margin: 20px 0;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-    </style>
 </head>
 <body>
     <h1>404</h1>
