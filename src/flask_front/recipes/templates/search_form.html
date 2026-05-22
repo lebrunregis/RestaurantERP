@@ -1,0 +1,20 @@
+<form method="GET" action="{{ url_for('recipes.search_recipes') }}" class="mb-4">
+    <div class="input-group mb-2">
+        <input type="text" name="q" class="form-control"
+               placeholder="Search for recipes"
+               value="{{ request.args.get('q', '') }}">
+        <button class="btn btn-primary" type="submit">Search</button>
+    </div>
+
+    <!-- Search Type Toggle -->
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="search_type" id="searchName" value="name"
+               {% if request.args.get('search_type', 'name') == 'name' %}checked{% endif %}>
+        <label class="form-check-label" for="searchName">Search by Name</label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="search_type" id="searchIngredient" value="ingredient"
+               {% if request.args.get('search_type') == 'ingredient' %}checked{% endif %}>
+        <label class="form-check-label" for="searchIngredient">Search by Ingredient</label>
+    </div>
+</form>

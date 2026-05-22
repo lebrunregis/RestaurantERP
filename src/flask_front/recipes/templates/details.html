@@ -1,39 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ recipe.name }}</title>
-</head>
-<body>
-    <h1>{{ recipe.name }}</h1>
+{% extends "base.html" %}
 
+{% block title %}{{ recipe.name }} - My Recipe App{% endblock %}
+
+{% block content %}
+<div class="mt-4">
+
+    <!-- Include reusable search form -->
+    {% include 'search_form.html' %}
+
+    <!-- Recipe Title -->
+    <h1 class="display-4">{{ recipe.name }}</h1>
+
+    <!-- Recipe Description -->
     {% if recipe.description %}
-    <div class="description">{{ recipe.description }}</div>
+        <p class="lead">{{ recipe.description }}</p>
     {% endif %}
 
-    <div class="meta">
+    <!-- Meta Info -->
+    <div class="mb-3 text-muted">
         Servings: {{ recipe.servings }} | Serving size: {{ recipe.serving_size_grams }} grams
     </div>
 
-    <div class="section">
+    <!-- Ingredients -->
+    <div class="mb-4">
         <h2>Ingredients</h2>
-        <ul class="ingredients">
+        <ul class="list-group">
             {% for ingredient in recipe.ingredients %}
-            <li>{{ ingredient }}</li>
+                <li class="list-group-item">{{ ingredient }}</li>
             {% endfor %}
         </ul>
     </div>
 
-    <div class="section">
+    <!-- Steps -->
+    <div class="mb-4">
         <h2>Steps</h2>
-        <ol class="steps">
+        <ol class="list-group list-group-numbered">
             {% for step in recipe.steps %}
-            <li>{{ step }}</li>
+                <li class="list-group-item">{{ step }}</li>
             {% endfor %}
         </ol>
     </div>
 
-    <a class="back" href="{{ url_for('recipes.list_recipes') }}">← Back to Recipe List</a>
-</body>
-</html>
+    <!-- Back Button -->
+    <div class="mt-3">
+        <a href="{{ url_for('recipes.list_recipes') }}" class="btn btn-secondary">← Back to Recipe List</a>
+    </div>
+</div>
+{% endblock %}

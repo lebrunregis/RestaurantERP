@@ -1,4 +1,4 @@
-from flask import Blueprint, app,  jsonify, render_template, request
+from flask import Blueprint, app,  jsonify, redirect, render_template, request, url_for
 from pytest import Cache
 
 
@@ -11,7 +11,6 @@ recipes_bp = Blueprint(
     url_prefix="/recipes",
     template_folder="templates"  # points to blueprints/recipes/templates
 )
-from flask import request
 
 @recipes_bp.route('/')
 def list_recipes():
@@ -35,6 +34,9 @@ def recipe_details(recipe_id):
             recipe=get_recipe_by_id(session,recipe_id)
             return render_template('details.html', recipe=recipe) 
 
+@recipes_bp.route("/search")
+def search_recipes():
+    return redirect(url_for('home.home'))
 
 @recipes_bp.route("/get/<int:recipe_id>", methods=["GET"])
 def get_recipe(recipe_id):

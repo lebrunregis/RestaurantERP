@@ -1,35 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-<head>
-    <meta charset="UTF-8">
-    <title>Recipe List</title>
-</head>
-<body>
-<ul>
-    {% for recipe in recipes %}
-        <li>
-            <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.recipe_id) }}">
-                {{ recipe.name }}
-            </a>
-            {% if recipe.description %}
-                <p>{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
+{% extends "base.html" %}
+
+{% block title %}Recipe List - My Recipe App{% endblock %}
+
+{% block content %}
+<div class="mt-4">
+
+    <!-- Include reusable search form -->
+    {% include 'search_form.html' %}
+
+    <!-- Recipe List -->
+    <ul class="list-group mb-4">
+        {% for recipe in recipes %}
+            <li class="list-group-item">
+                <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.recipe_id) }}" class="fw-bold">{{ recipe.name }}</a>
+                {% if recipe.description %}
+                    <p class="mb-0">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('recipes.list_recipes', page=page-1) }}">Previous</a>
+                </li>
             {% endif %}
-        </li>
-    {% endfor %}
-</ul>
 
-<div class="pagination">
-    {% if page > 1 %}
-        <a href="{{ url_for('recipes.list_recipes', page=page-1) }}">Previous</a>
-    {% endif %}
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ page }} of {{ total_pages }}</span>
+            </li>
 
-    Page {{ page }} of {{ total_pages }}
+            {% if page < total_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('recipes.list_recipes', page=page+1) }}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
 
-    {% if page < total_pages %}
-        <a href="{{ url_for('recipes.list_recipes', page=page+1) }}">Next</a>
-    {% endif %}
+    <!-- Back to Home -->
+    <div class="mt-3">
+        <a href="{{ url_for('home.home') }}" class="btn btn-secondary">← Back to Home</a>
+    </div>
 </div>
-    <a class="back" href="{{ url_for('home.home') }}">← Back to Home</a>
-</body>
-</html>
+{% endblock %}
