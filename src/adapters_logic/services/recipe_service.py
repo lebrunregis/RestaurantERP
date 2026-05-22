@@ -9,7 +9,9 @@ from src.alchemy_db.accessors.recipes_repository import (
     get_all_recipes as db_get_all_recipes,
     update_recipe as db_update_recipe,
     delete_recipe as db_delete_recipe,
-    get_recipes_paginated as db_get_recipes_paginated
+    get_recipes_paginated as db_get_recipes_paginated,
+    get_top_matching_recipe_by_ingredients as db_get_top_matching_recipe_by_ingredients,
+    get_recipes_containing_in_name as db_get_recipes_containing_in_name
 )
 
 def get_all_recipes(db: Session) -> List[RecipeDTO]:
@@ -61,3 +63,8 @@ def get_recipes_paginated(db: Session, page: int = 1, per_page: int = 50) -> Tup
     recipesDTOs = [recipe_to_dto(r) for r in recipes]
     total = db_count_recipes(db)
     return (recipesDTOs, total)
+
+def     get_top_matching_recipe_by_ingredients():
+  raise NotImplementedError("Todo")
+def    get_recipes_containing_in_name ():
+      raise NotImplementedError("Todo")
