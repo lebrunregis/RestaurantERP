@@ -1,7 +1,13 @@
 from typing import Optional
 
 from sqlalchemy.orm import Session
+
+from src.alchemy_db.models.ingredients_model import Ingredient
+from src.alchemy_db.models.recipe_ingredients_model import RecipeIngredient
 from ..models.recipes_model import Recipe
+from sqlalchemy import Row, Sequence, Tuple, select, func
+
+from typing import Sequence, Tuple, cast
 
 # --- CRUD Accessors for Recipe --- #
 
@@ -86,3 +92,29 @@ def get_recipes_paginated(db: Session, page: int = 1, per_page: int = 50) -> lis
 def count_recipes(db: Session) -> int:
     """Return total number of recipes"""
     return db.query(Recipe).count()
+
+def get_recipes_containing_in_name(db: Session, substr: str) -> list[Recipe]:
+   return db.query(Recipe).filter(Recipe.name.ilike(f"%{substr}%")).all()
+
+
+def get_top_matching_recipe_by_ingredients(
+    db: Session,
+    search_ingredients: list[str]
+) -> list[Tuple[int, str, int]]:
+    stmt = (
+        select(
+            Recipe.recipe_id,
+            Recipe.name,
+            func.count(Ingredient.ingredient_id).label("common_ingredient_count")
+        )
+        .join(RecipeIngredient)
+        .join(Ingredient)
+        .filter(func.or_(*[Ingredient.name.ilike(f"%{name}%") for name in search_ingredients]))
+        .group_by(Recipe.recipe_id)
+        .order_by(func.count(Ingredient.ingredient_id).desc())
+    )
+
+    results = db.execute(stmt).all()
+
+    # Convert Rows to tuples
+    return  [tuple(row) for row in results]
