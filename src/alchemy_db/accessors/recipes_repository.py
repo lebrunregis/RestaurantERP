@@ -5,9 +5,10 @@ from sqlalchemy.orm import Session
 from src.alchemy_db.models.ingredients_model import Ingredient
 from src.alchemy_db.models.recipe_ingredients_model import RecipeIngredient
 from ..models.recipes_model import Recipe
-from sqlalchemy import Row, Sequence, Tuple, select, func
+from sqlalchemy import case, distinct, select, func, or_
 
-from typing import Sequence, Tuple, cast
+from sqlalchemy import select, func, distinct, or_
+from sqlalchemy.orm import Session
 
 # --- CRUD Accessors for Recipe --- #
 
@@ -74,8 +75,6 @@ def update_recipe(
     db.refresh(recipe)
     return recipe
 
-
-# Delete a recipe
 def delete_recipe(db: Session, recipe_id: int) -> bool:
     recipe = db.query(Recipe).filter(Recipe.recipe_id == recipe_id).first()
     if not recipe:
@@ -85,36 +84,113 @@ def delete_recipe(db: Session, recipe_id: int) -> bool:
     return True
 
 def get_recipes_paginated(db: Session, page: int = 1, per_page: int = 50) -> list[Recipe]:
-    """Return a page of recipes"""
     offset = (page - 1) * per_page
     return db.query(Recipe).offset(offset).limit(per_page).all()
 
 def count_recipes(db: Session) -> int:
-    """Return total number of recipes"""
     return db.query(Recipe).count()
 
 def get_recipes_containing_in_name(db: Session, substr: str) -> list[Recipe]:
    return db.query(Recipe).filter(Recipe.name.ilike(f"%{substr}%")).all()
 
+def get_recipes_containing_in_name_paginated(db: Session, substr: str,  page: int = 1, per_page: int = 50) -> list[Recipe]:
+   offset = (page - 1) * per_page
+   return db.query(Recipe).filter(Recipe.name.ilike(f"%{substr}%")).offset(offset).limit(per_page).all()
 
-def get_top_matching_recipe_by_ingredients(
+def get_top_matching_recipes_by_ingredients(
     db: Session,
     search_ingredients: list[str]
-) -> list[Tuple[int, str, int]]:
+) -> list[Recipe]:
+
     stmt = (
-        select(
-            Recipe.recipe_id,
-            Recipe.name,
-            func.count(Ingredient.ingredient_id).label("common_ingredient_count")
-        )
+        select(Recipe)
         .join(RecipeIngredient)
         .join(Ingredient)
-        .filter(func.or_(*[Ingredient.name.ilike(f"%{name}%") for name in search_ingredients]))
+        .filter(
+            or_(
+                *[
+                    Ingredient.name.ilike(f"%{name}%")
+                    for name in search_ingredients
+                ]
+            )
+        )
         .group_by(Recipe.recipe_id)
         .order_by(func.count(Ingredient.ingredient_id).desc())
     )
 
-    results = db.execute(stmt).all()
+    results = db.execute(stmt).scalars().all()
 
-    # Convert Rows to tuples
-    return  [tuple(row) for row in results]
+    return list(results)
+
+
+
+def get_top_matching_recipes_by_ingredients_paginated(
+    db: Session,
+    search_ingredients: list[str],
+    page: int = 1,
+    per_page: int = 50,
+) -> tuple[list[tuple[Recipe, int]], int]:
+
+    offset = (page - 1) * per_page
+
+    match_cases = [
+        (Ingredient.name.ilike(f"%{name}%"), name)
+        for name in search_ingredients
+    ]
+
+    matched_term = case(
+        *match_cases,
+        else_=None
+    ).label("matched_term")
+
+    matched = (
+        select(
+            RecipeIngredient.recipe_id,
+            matched_term,
+        )
+        .join(
+            Ingredient,
+            Ingredient.ingredient_id == RecipeIngredient.ingredient_id
+        )
+        .subquery()
+    )
+
+    score = func.count(
+        distinct(matched.c.matched_term)
+    ).label("score")
+
+    recipe_query = (
+        select(
+            Recipe,
+            score
+        )
+        .join(
+            matched,
+            matched.c.recipe_id == Recipe.recipe_id
+        )
+        .where(matched.c.matched_term.is_not(None))
+        .group_by(Recipe.recipe_id)
+        .order_by(score.desc(), Recipe.recipe_id.asc())
+    )
+
+    # total matching recipes
+    total_count_query = (
+        select(func.count())
+        .select_from(recipe_query.subquery())
+    )
+
+    total = db.execute(total_count_query).scalar_one()
+
+    paginated_query = (
+        recipe_query
+        .offset(offset)
+        .limit(per_page)
+    )
+
+    rows = db.execute(paginated_query).all()
+
+    results: list[tuple[Recipe, int]] = [
+        (row[0], row[1]) for row in rows
+    ]
+
+    return results, total

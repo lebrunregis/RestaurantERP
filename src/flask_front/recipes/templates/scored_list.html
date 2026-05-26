@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Recipe List - My Recipe App{% endblock %}
+
+{% block content %}
+<div class="mt-4">
+
+    <!-- Include reusable search form -->
+    {% include 'search_form.html' %}
+
+<ul class="list-group mb-4">
+    {% for recipe in recipe_score_data %}
+        <li class="list-group-item">
+
+            <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe[0].recipe_id) }}"
+               class="fw-bold">
+                {{ recipe[0].name }}
+            </a>
+
+            <span class="fw-bold">
+                Score: {{ recipe[1] }}
+            </span>
+
+            {% if recipe[0].description %}
+                <p class="mb-0">
+                    {{ recipe[0].description[:100] }}
+                    {% if recipe[0].description|length > 100 %}
+                        ...
+                    {% endif %}
+                </p>
+            {% endif %}
+
+        </li>
+    {% endfor %}
+</ul>
+
+    <!-- Pagination -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% if page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('recipes.list_recipes', page=page-1) }}">Previous</a>
+                </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ page }} of {{ total_pages }}</span>
+            </li>
+
+            {% if page < total_pages %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('recipes.list_recipes', page=page+1) }}">Next</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Back to Home -->
+    <div class="mt-3">
+        <a href="{{ url_for('home.home') }}" class="btn btn-secondary">← Back to Home</a>
+    </div>
+</div>
+{% endblock %}

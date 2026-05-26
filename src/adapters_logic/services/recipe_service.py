@@ -1,5 +1,7 @@
 from typing import List, Optional, Tuple
 from sqlalchemy.orm import Session
+
+from src.alchemy_db.models.recipes_model import Recipe
 from ..dtos.recipe_dto import RecipeDTO
 from ..mappers.recipe_mapper import recipe_to_dto, dto_to_recipe
 from src.alchemy_db.accessors.recipes_repository import (
@@ -10,12 +12,13 @@ from src.alchemy_db.accessors.recipes_repository import (
     update_recipe as db_update_recipe,
     delete_recipe as db_delete_recipe,
     get_recipes_paginated as db_get_recipes_paginated,
-    get_top_matching_recipe_by_ingredients as db_get_top_matching_recipe_by_ingredients,
-    get_recipes_containing_in_name as db_get_recipes_containing_in_name
+    get_top_matching_recipes_by_ingredients as db_get_top_matching_recipe_by_ingredients,
+    get_recipes_containing_in_name as db_get_recipes_containing_in_name,
+    get_top_matching_recipes_by_ingredients_paginated as db_get_top_matching_recipes_by_ingredients_paginated,
+    get_recipes_containing_in_name_paginated as db_get_recipes_containing_in_name_paginated,
 )
 
 def get_all_recipes(db: Session) -> List[RecipeDTO]:
-    """Fetch all recipes from DB and convert to DTOs"""
     recipes = db_get_all_recipes(db)
     return [recipe_to_dto(r) for r in recipes]
 
@@ -24,7 +27,6 @@ def get_recipe_by_id(db: Session, recipe_id: int) -> Optional[RecipeDTO]:
     return recipe_to_dto(recipe) if recipe else None
 
 def create_recipe(db: Session, dto: RecipeDTO) -> RecipeDTO:
-    """Create a recipe from a DTO"""
     recipe_model = dto_to_recipe(dto)
     recipe_model = db_create_recipe(
         db,
@@ -38,7 +40,6 @@ def create_recipe(db: Session, dto: RecipeDTO) -> RecipeDTO:
     return recipe_to_dto(recipe_model)
 
 def update_recipe(db: Session, recipe_id: int, dto: RecipeDTO) -> Optional[RecipeDTO]:
-    """Update a recipe by ID using a DTO"""
     updated_model = db_update_recipe(
         db,
         recipe_id=recipe_id,
@@ -55,16 +56,27 @@ def delete_recipe(db: Session, recipe_id: int) -> bool:
     return db_delete_recipe(db, recipe_id)
 
 def get_recipes_paginated(db: Session, page: int = 1, per_page: int = 50) -> Tuple[List[RecipeDTO], int]:
-    """
-    Fetch a page of recipes from DB and convert to DTOs.
-    Returns (list of DTOs, total count of recipes)
-    """
     recipes = db_get_recipes_paginated(db, page, per_page)
     recipesDTOs = [recipe_to_dto(r) for r in recipes]
     total = db_count_recipes(db)
     return (recipesDTOs, total)
 
-def     get_top_matching_recipe_by_ingredients():
-  raise NotImplementedError("Todo")
-def    get_recipes_containing_in_name ():
-      raise NotImplementedError("Todo")
+def get_top_matching_recipes_by_ingredients(db: Session, ingredients: list[str])-> list[RecipeDTO]:
+    recipes =  db_get_top_matching_recipe_by_ingredients(db,ingredients)
+    return [recipe_to_dto(r) for r in recipes]
+
+def get_recipes_containing_in_name (db: Session, substr: str)-> list[RecipeDTO]:
+  recipes =   db_get_recipes_containing_in_name(db, substr)
+  return [recipe_to_dto(r) for r in recipes]
+  
+def get_recipes_containing_in_name_paginated (db: Session, substr: str, page: int = 1, per_page: int = 50)-> list[RecipeDTO]:
+    recipes =   db_get_recipes_containing_in_name_paginated(db, substr,  page, per_page)
+    return [recipe_to_dto(r) for r in recipes]
+  
+def get_top_matching_recipes_by_ingredients_paginated(db: Session, ingredients: list[str], page: int = 1, per_page: int = 50) -> tuple[list[tuple[RecipeDTO,int]], int]:
+    result =  db_get_top_matching_recipes_by_ingredients_paginated(db,ingredients, page, per_page)
+    results = result[0]
+    amount = result[1]
+    recipesDTO = [(recipe_to_dto(result[0]),result[1]) for result in results]
+    print(f"converted {len(recipesDTO)} DTOS")
+    return (recipesDTO, amount)
