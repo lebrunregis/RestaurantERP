@@ -11,16 +11,16 @@ class Supplier(Base):
 
     supplier_id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    contact_name: Mapped[str] = mapped_column(String(100), nullable=True)
-    phone_number: Mapped[str] = mapped_column(String(20), nullable=True)
-    email: Mapped[str] = mapped_column(String(100), nullable=True)
-    address: Mapped[str] = mapped_column(String(200), nullable=True)
-    supplier_type: Mapped[str] = mapped_column(String(50), nullable=True)
-    tax_id: Mapped[str] = mapped_column(String(50), nullable=True)
-    payment_terms: Mapped[str] = mapped_column(String(50), nullable=True)
-    lead_time_days: Mapped[int] = mapped_column(Integer, nullable=True)
+    contact_name: Mapped[str] = mapped_column(String(100), nullable=False)
+    phone_number: Mapped[str] = mapped_column(String(20), nullable=False)
+    email: Mapped[str] = mapped_column(String(100), nullable=False)
+    address: Mapped[str] = mapped_column(String(200), nullable=False)
+    supplier_type: Mapped[str] = mapped_column(String(50), nullable=False)
+    tax_id: Mapped[str] = mapped_column(String(50), nullable=False)
+    payment_terms: Mapped[str] = mapped_column(String(50), nullable=False)
+    lead_time_days: Mapped[int] = mapped_column(Integer, nullable=False)
     rating: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
-    active: Mapped[bool] = mapped_column(Boolean, default=True)
+    active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
 
 
     # Link to SupplierIngredient
