@@ -49,7 +49,7 @@ def get_recipes_paginated(db: Session, page: int = 1, per_page: int = 50) -> Tup
     return (recipesDTOs, total)
 
 def get_top_matching_recipes_by_ingredients(db: Session, ingredients: list[str])-> list[RecipeDTO]:
-    recipes =  get_top_matching_recipes_by_ingredients(db,ingredients)
+    recipes =  recipes_repository.get_top_matching_recipes_by_ingredients(db,ingredients)
     return [recipe_to_dto(r) for r in recipes]
 
 def get_recipes_containing_in_name (db: Session, substr: str)-> list[RecipeDTO]:
