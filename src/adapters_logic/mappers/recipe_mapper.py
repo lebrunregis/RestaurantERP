@@ -2,7 +2,7 @@ import ast
 import html
 from typing import List, Optional
 from ..dtos.recipe_dto import RecipeDTO
-from src.alchemy_db.models.recipes_model import Recipe  # adjust import path as needed
+from src.alchemy_db.models.recipes_model import Recipe
 
 # ---------- Helper Functions ----------
 def parse_string_list(raw_str: str) -> List[str]:
