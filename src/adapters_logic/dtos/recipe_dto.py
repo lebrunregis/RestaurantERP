@@ -10,6 +10,6 @@ class RecipeDTO:
         ingredients :list[str]
         serving_size_grams:int
         servings :int
-        steps:str
+        steps:list[str]
 
 
