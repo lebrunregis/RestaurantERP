@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}Recipe List - My Recipe App{% endblock %}
+{% block title %}Suppliers{% endblock %}
 
 {% block content %}
 <div class="mt-4">
 
     <!-- Include reusable search form -->
-    {% include 'search_form.html' %}
+    {% include 'suppliers/search_form.html' %}
 
-    <!-- Recipe List -->
+    <!-- supplier List -->
     <ul class="list-group mb-4">
-        {% for recipe in recipes %}
+        {% for supplier in suppliers %}
             <li class="list-group-item">
-                <a href="{{ url_for('recipes.recipe_details', recipe_id=recipe.recipe_id) }}" class="fw-bold">{{ recipe.name }}</a>
-                {% if recipe.description %}
-                    <p class="mb-0">{{ recipe.description[:100] }}{% if recipe.description|length > 100 %}...{% endif %}</p>
+                <a href="{{ url_for('suppliers.supplier_details', supplier_id=supplier.supplier_id) }}" class="fw-bold">{{ supplier.name }}</a>
+                {% if supplier.description %}
+                    <p class="mb-0">{{ supplier.description[:100] }}{% if supplier.description|length > 100 %}...{% endif %}</p>
                 {% endif %}
             </li>
         {% endfor %}
@@ -25,7 +25,7 @@
         <ul class="pagination justify-content-center">
             {% if page > 1 %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for('recipes.list_recipes', page=page-1) }}">Previous</a>
+                    <a class="page-link" href="{{ url_for('suppliers.list_suppliers', page=page-1) }}">Previous</a>
                 </li>
             {% endif %}
 
@@ -35,7 +35,7 @@
 
             {% if page < total_pages %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for('recipes.list_recipes', page=page+1) }}">Next</a>
+                    <a class="page-link" href="{{ url_for('suppliers.list_suppliers', page=page+1) }}">Next</a>
                 </li>
             {% endif %}
         </ul>
