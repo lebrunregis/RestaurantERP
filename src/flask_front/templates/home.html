@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 
-{% block title %}Home - My Recipe App{% endblock %}
+{% block title %}Home - My Restaurant App{% endblock %}
 
 {% block content %}
 <div class="text-center mt-5">
-    <h1 class="display-4">Welcome to My Recipe App!</h1>
+    <h1 class="display-4">Welcome to My Restaurant App!</h1>
     <p class="lead">Discover delicious recipes, cook with love, and enjoy every bite.</p>
     <a class="btn btn-primary btn-lg mt-3" href="{{ url_for('recipes.list_recipes') }}">
         View Recipes
+    </a>
+    <a class="btn btn-primary btn-lg mt-3" href="{{ url_for('suppliers.list_suppliers') }}">
+        View Suppliers
     </a>
 </div>
 {% endblock %}

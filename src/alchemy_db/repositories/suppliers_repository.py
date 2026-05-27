@@ -130,3 +130,39 @@ def remove_ingredient_from_supplier(db: Session, supplier_id: int, ingredient_li
         db.commit()
         return True
     return False
+
+def count_recipes(db: Session) -> int:
+    return db.query(Supplier).count()
+
+def get_suppliers_paginated(
+    db: Session,
+    page: int = 1,
+    page_size: int = 20
+) -> tuple[List[Supplier],int]:
+    offset = (page - 1) * page_size
+    total = count_recipes(db)
+    return (
+        db.query(Supplier)
+        .order_by(Supplier.supplier_id)
+        .offset(offset)
+        .limit(page_size)
+        .all(),total
+    )
+
+
+def get_suppliers_containing_in_name_paginated(
+    db: Session,
+    name: str,
+    page: int = 1,
+    page_size: int = 20
+) -> List[Supplier]:
+    offset = (page - 1) * page_size
+
+    return (
+        db.query(Supplier)
+        .filter(Supplier.name.ilike(f"%{name}%"))
+        .order_by(Supplier.supplier_id)
+        .offset(offset)
+        .limit(page_size)
+        .all()
+    )

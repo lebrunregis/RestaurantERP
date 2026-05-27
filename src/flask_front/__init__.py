@@ -14,5 +14,7 @@ def create_app():
     # Import and register blueprints
     from .recipes.routing import recipes_bp
     app.register_blueprint(recipes_bp)
+    from .suppliers.routing import suppliers_bp
+    app.register_blueprint(suppliers_bp)
 
     return app

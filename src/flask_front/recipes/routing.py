@@ -26,7 +26,7 @@ def list_recipes()->str:
         total_pages = (total + per_page - 1) // per_page  # ceil division
 
         return render_template(
-            'list.html',
+            'recipes/list.html',
             recipes=recipes,
             page=page,
             total_pages=total_pages
@@ -36,14 +36,14 @@ def list_recipes()->str:
 def recipe_details(recipe_id)->str:
     with SessionLocal() as session:
         recipe=get_recipe_by_id(session,recipe_id)
-        return render_template('details.html', recipe=recipe) 
+        return render_template('recipes/details.html', recipe=recipe) 
          
 @recipes_bp.route("/search")
 def search_recipes()->str:
     query = request.args.get("q","").strip()
     search_type = request.args.get("search_type", "name")
     if not query:
-        return render_template("list.html", recipes=[])
+        return render_template("recipes/list.html", recipes=[])
 
     if search_type == "ingredient":
       return  search_recipes_by_ingredients(query)
@@ -60,7 +60,7 @@ def search_recipes_by_name(recipe_name: str)->str:
         total_pages = (total + per_page - 1) // per_page  # ceil division
 
         return render_template(
-            'list.html',
+            'recipes/list.html',
             recipes=recipes,
             page=page,
             total_pages=total_pages
@@ -77,7 +77,7 @@ def search_recipes_by_ingredients(ingredients : str) ->str:
         total_pages = (total + per_page - 1) // per_page  # ceil division
         
     return render_template(
-        "scored_list.html",
+        "recipes/scored_list.html",
         recipe_score_data=recipes_score,
         page=page,
         total_pages=total_pages

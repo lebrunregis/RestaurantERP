@@ -8,13 +8,9 @@ from src.adapters_logic.mappers.supplier_mapper import (
 )
 from src.alchemy_db.repositories import suppliers_repository
 
-class SupplierService:
-    def __init__(self, db: Session):
-        self.db = db
-
-    def create_supplier(self, dto: SupplierDTO) -> SupplierDTO:
+def create_supplier(db: Session, dto: SupplierDTO) -> SupplierDTO:
         supplier = suppliers_repository.create_supplier(
-            db=self.db,
+            db=db,
             name=dto.name,
             contact_name=dto.contact_name,
             phone_number=dto.phone_number,
@@ -30,9 +26,9 @@ class SupplierService:
 
         return supplier_to_dto(supplier)
 
-    def get_supplier_by_id(self, supplier_id: int) -> Optional[SupplierDTO]:
+def get_supplier_by_id(db: Session, supplier_id: int) -> Optional[SupplierDTO]:
         supplier = suppliers_repository.get_supplier_by_id(
-            db=self.db,
+            db=db,
             supplier_id=supplier_id,
         )
 
@@ -41,18 +37,46 @@ class SupplierService:
 
         return supplier_to_dto(supplier)
 
-    def get_all_suppliers(self) -> List[SupplierDTO]:
-        suppliers = suppliers_repository.get_all_suppliers(self.db)
+def get_all_suppliers(db: Session) -> List[SupplierDTO]:
+        suppliers = suppliers_repository.get_all_suppliers(db)
 
         return [supplier_to_dto(supplier) for supplier in suppliers]
 
-    def update_supplier(
-        self,
+def get_suppliers_paginated(
+        db: Session,
+        page: int = 1,
+        page_size: int = 20
+    ) -> tuple[list[SupplierDTO],int]:
+        suppliers = suppliers_repository.get_suppliers_paginated(
+            db=db,
+            page=page,
+            page_size=page_size,
+        )
+
+        return ([supplier_to_dto(supplier) for supplier in suppliers[0]],suppliers[1])
+
+def get_suppliers_containing_in_name_paginated(
+        db: Session,
+        name: str,
+        page: int = 1,
+        page_size: int = 20
+    ) -> List[SupplierDTO]:
+        suppliers = suppliers_repository.get_suppliers_containing_in_name_paginated(
+            db=db,
+            name=name,
+            page=page,
+            page_size=page_size,
+        )
+
+        return [supplier_to_dto(supplier) for supplier in suppliers]
+
+def update_supplier(
+        db: Session,
         supplier_id: int,
         dto: SupplierDTO
     ) -> Optional[SupplierDTO]:
         supplier = suppliers_repository.update_supplier(
-            db=self.db,
+            db=db,
             supplier_id=supplier_id,
             name=dto.name,
             contact_name=dto.contact_name,
@@ -72,8 +96,8 @@ class SupplierService:
 
         return supplier_to_dto(supplier)
 
-    def delete_supplier(self, supplier_id: int) -> bool:
+def delete_supplier(db: Session, supplier_id: int) -> bool:
         return suppliers_repository.delete_supplier(
-            db=self.db,
+            db=db,
             supplier_id=supplier_id,
         )
