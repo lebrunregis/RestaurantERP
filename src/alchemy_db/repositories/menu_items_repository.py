@@ -2,7 +2,7 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from datetime import datetime
 from ..models.menu_items_model import MenuItem
-from ..models.recipes_model import Recipe
+from ..models.menu_items_model import Recipe
 
 
 # --- CRUD Accessors for MenuItem --- #
@@ -81,6 +81,21 @@ def delete_menu_item(db: Session, menu_item_id: int) -> bool:
     db.delete(item)
     db.commit()
     return True
+
+
+def get_menu_items_paginated(db: Session, page: int = 1, per_page: int = 50) -> list[Recipe]:
+    offset = (page - 1) * per_page
+    return db.query(Recipe).offset(offset).limit(per_page).all()
+
+def count_menu_items(db: Session) -> int:
+    return db.query(Recipe).count()
+
+def get_menu_items_containing_in_name(db: Session, substr: str) -> list[Recipe]:
+   return db.query(Recipe).filter(Recipe.name.ilike(f"%{substr}%")).all()
+
+def get_menu_items_containing_in_name_paginated(db: Session, substr: str,  page: int = 1, per_page: int = 50) -> list[Recipe]:
+   offset = (page - 1) * per_page
+   return db.query(Recipe).filter(Recipe.name.ilike(f"%{substr}%")).offset(offset).limit(per_page).all()
 
 
 # --- Relationship Accessor for Recipe --- #

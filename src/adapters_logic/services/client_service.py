@@ -9,13 +9,10 @@ from src.adapters_logic.mappers.client_mapper import (
 from src.alchemy_db.repositories import clients_repository
 
 
-class ClientService:
-    def __init__(self, db: Session):
-        self.db = db
 
-    def create_client(self, dto: ClientDTO) -> ClientDTO:
+def create_client(db: Session, dto: ClientDTO) -> ClientDTO:
         client = clients_repository.create_client(
-            db=self.db,
+            db=db,
             name=dto.name,
             email=dto.email,
             phone_number=dto.phone_number,
@@ -25,9 +22,9 @@ class ClientService:
 
         return client_to_dto(client)
 
-    def get_client_by_id(self, client_id: int) -> Optional[ClientDTO]:
+def get_client_by_id(db: Session, client_id: int) -> Optional[ClientDTO]:
         client = clients_repository.get_client_by_id(
-            db=self.db,
+            db=db,
             client_id=client_id,
         )
 
@@ -36,9 +33,9 @@ class ClientService:
 
         return client_to_dto(client)
 
-    def get_client_by_email(self, email: str) -> Optional[ClientDTO]:
+def get_client_by_email(db: Session, email: str) -> Optional[ClientDTO]:
         client = clients_repository.get_client_by_email(
-            db=self.db,
+            db=db,
             email=email,
         )
 
@@ -47,18 +44,31 @@ class ClientService:
 
         return client_to_dto(client)
 
-    def get_all_clients(self) -> List[ClientDTO]:
-        clients = clients_repository.get_all_clients(self.db)
+def get_all_clients(db: Session) -> List[ClientDTO]:
+        clients = clients_repository.get_all_clients(db)
 
         return [client_to_dto(client) for client in clients]
 
-    def update_client(
-        self,
+def get_clients_paginated(db: Session, page: int = 1, per_page: int = 50) -> List[ClientDTO]:
+        clients = clients_repository.get_clients_paginated(db, page, per_page)
+
+        return [client_to_dto(client) for client in clients]
+
+def get_clients_containing_in_name (db: Session, substr: str)-> list[ClientDTO]:
+  clients =   clients_repository.get_clients_containing_in_name(db, substr)
+  return [client_to_dto(r) for r in clients]
+  
+def get_clients_containing_in_name_paginated (db: Session, substr: str, page: int = 1, per_page: int = 50)-> list[RecipeDTO]:
+    clients =   clients_repository.get_clients_containing_in_name_paginated(db, substr,  page, per_page)
+    return [client_to_dto(r) for r in clients]
+
+def update_client(
+        db: Session,
         client_id: int,
         dto: ClientDTO
     ) -> Optional[ClientDTO]:
         client = clients_repository.update_client(
-            db=self.db,
+            db=db,
             client_id=client_id,
             name=dto.name,
             email=dto.email,
@@ -71,8 +81,13 @@ class ClientService:
 
         return client_to_dto(client)
 
-    def delete_client(self, client_id: int) -> bool:
+def delete_client(db: Session, client_id: int) -> bool:
         return clients_repository.delete_client(
-            db=self.db,
+            db=db,
             client_id=client_id,
+        )
+
+def count_clients(db: Session)-> int:
+              return clients_repository.count_clients(
+            db=db,
         )

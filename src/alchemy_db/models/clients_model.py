@@ -7,7 +7,7 @@ class Client(Base):
     __tablename__ = "clients"
 
     client_id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100), nullable=False)  # full name
+    full_name: Mapped[str] = mapped_column(String(100), nullable=False)  # full name
     email: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
     phone_number: Mapped[str] = mapped_column(String(50), nullable=True)
     address: Mapped[str] = mapped_column(String(200), nullable=True)  # for delivery
@@ -17,4 +17,4 @@ class Client(Base):
     orders = relationship("ClientOrder", back_populates="client", cascade="all, delete-orphan")
 
     def __repr__(self):
-        return f"<Client(id={self.client_id}, name={self.name}, email={self.email})>"
+        return f"<Client(id={self.client_id}, name={self.full_name}, email={self.email})>"

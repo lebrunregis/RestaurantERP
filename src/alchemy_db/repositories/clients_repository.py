@@ -1,5 +1,6 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
+from sqlalchemy import or_
 from datetime import datetime
 from ..models.clients_model import Client
 from ..models.client_orders_model import  ClientOrder
@@ -39,6 +40,21 @@ def get_client_by_email(db: Session, email: str) -> Optional[Client]:
 def get_all_clients(db: Session) -> List[Client]:
     return db.query(Client).all()
 
+def get_clients_paginated(db: Session, page: int = 1, per_page: int = 50) -> List[Client]:
+    offset = (page - 1) * per_page
+    return db.query(Client).offset(offset).limit(per_page).all()
+
+
+def count_clients(db: Session) -> int:
+    return db.query(Client).count()
+
+def get_clients_containing_in_name(db: Session, substr: str) -> list[Client]:
+   return db.query(Client).filter(or_(Client.full_name.ilike(f"%{substr}%",))).all()
+
+def get_clients_containing_in_name_paginated(db: Session, substr: str,  page: int = 1, per_page: int = 50) -> list[Client]:
+   offset = (page - 1) * per_page
+   return db.query(Client).filter(or_(Client.full_name.ilike(f"%{substr}%"))).offset(offset).limit(per_page).all()
+
 
 def update_client(
     db: Session,
@@ -52,7 +68,7 @@ def update_client(
     if not client:
         return None
     if name is not None:
-        client.name = name
+        client.full_name = name
     if email is not None:
         client.email = email
     if phone_number is not None:

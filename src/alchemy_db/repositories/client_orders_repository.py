@@ -41,6 +41,10 @@ def get_orders_for_client(db: Session, client_id: int) -> list[ClientOrder]:
 def get_all_client_orders(db: Session) -> list[ClientOrder]:
     return db.query(ClientOrder).all()
 
+def get_all_client_orders_paginated(db: Session, page: int = 1, per_page: int = 50) -> list[Recipe]:
+    offset = (page - 1) * per_page
+    return db.query(ClientOrder).offset(offset).limit(per_page).all()
+
 
 # Update a client order
 def update_client_order(
@@ -85,13 +89,44 @@ def get_items_for_order(db: Session, order_id: int) -> list[ClientOrderItem]:
 
 
 # Add an item to a client order
-def add_item_to_order(db: Session, order_id: int, item: ClientOrderItem) -> bool:
-    order = db.query(ClientOrder).filter(ClientOrder.order_id == order_id).first()
-    if not order:
-        return False
-    order.items.append(item)
+def add_item_to_order(db: Session, order_id: int, 
+    menu_item_id :int,
+    quantity: int,
+    price :float ,
+    notes:str) -> Optional[ClientOrderItem]:
+    new_order_item = ClientOrderItem(
+        order_id=order_id,
+        menu_item_id= menu_item_id,
+        quantity=quantity,
+        price=price,
+        notes=notes
+    )
+    db.add(new_order_item)
     db.commit()
-    return True
+    db.refresh(new_order_item)
+    return new_order_item
+
+def update_client_order_item(
+    db: Session,
+    order_id:int,
+    menu_item_id:int,
+    quantity:int,
+    price:float,
+    notes:str
+) -> Optional[ClientOrderItem]:
+    orderItem = db.query(ClientOrderItem).filter(ClientOrderItem.order_id == order_id, ClientOrderItem.menu_item_id == menu_item_id).first()
+    if not orderItem:
+        return None
+    if quantity is not None:
+        orderItem.quantity = quantity
+    if notes is not None:
+        orderItem.notes = notes
+    if price is not None:
+        orderItem.price = price
+    db.commit()
+    db.refresh(orderItem)
+    return orderItem
+
 
 
 # Remove an item from a client order

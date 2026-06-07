@@ -1,7 +1,10 @@
+from dataclasses import dataclass
+
 from sqlalchemy import ForeignKey, Integer, Float, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from .base_model import Base
 
+@dataclass
 class ClientOrderItem(Base):
     __tablename__ = "client_order_items"
 

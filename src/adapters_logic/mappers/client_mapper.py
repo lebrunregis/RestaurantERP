@@ -7,7 +7,7 @@ from src.alchemy_db.models.clients_model import Client
 def client_to_dto(client: Client) -> ClientDTO:
     return ClientDTO(
         client_id=client.client_id,
-        name=client.name,
+        name=client.full_name,
         email=client.email,
         phone_number=client.phone_number,
         address=client.address,
@@ -24,7 +24,7 @@ def dto_to_client(
         client = Client()
 
     client.client_id = dto.client_id
-    client.name = dto.name
+    client.full_name = dto.name
     client.email = dto.email
     client.phone_number = dto.phone_number
     client.address = dto.address
